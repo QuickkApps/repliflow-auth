@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Successful</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+        .success-icon {
+            font-size: 4rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        .code {
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            margin: 1rem 0;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✓</div>
+        <h1>Authentication Successful!</h1>
+        <p>You have successfully authenticated with WorkOS.</p>
+        <p>Redirecting back to your application...</p>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Get the authorization code from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        
+        if (code) {
+            // Create the deep link to open the desktop app
+            const deepLink = `timetracker://auth/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || '')}`;
+            
+            document.getElementById('status').innerHTML = '<p style="color: #10b981;">Opening your app...</p>';
+            
+            // Try to open the app
+            window.location.href = deepLink;
+            
+            // Fallback message after 3 seconds
+            setTimeout(() => {
+                document.getElementById('status').innerHTML = 
+                    '<p style="color: #f59e0b;">If the app didn\'t open automatically, please copy this code:</p>' +
+                    '<div class="code">' + code + '</div>' +
+                    '<p style="font-size: 0.9rem;">Paste it in your Time Tracker application.</p>';
+            }, 3000);
+        } else {
+            document.getElementById('status').innerHTML = 
+                '<p style="color: #ef4444;">No authorization code found. Please try logging in again.</p>';
+        }
+    </script>
+</body>
+</html>
